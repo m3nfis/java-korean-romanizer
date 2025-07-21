@@ -1,5 +1,11 @@
 # Korean Romanizer - Java
 
+[![CI/CD Pipeline](https://github.com/m3nfis/java-korean-romanizer/actions/workflows/ci.yml/badge.svg)](https://github.com/m3nfis/java-korean-romanizer/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=m3nfis_java-korean-romanizer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=m3nfis_java-korean-romanizer)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=m3nfis_java-korean-romanizer&metric=coverage)](https://sonarcloud.io/summary/new_code?id=m3nfis_java-korean-romanizer)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.m3nfis/korean-romanizer.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22io.github.m3nfis%22%20AND%20a:%22korean-romanizer%22)
+[![Javadoc](https://img.shields.io/badge/javadoc-available-brightgreen.svg)](https://m3nfis.github.io/java-korean-romanizer/javadoc/)
+
 A Java library for romanizing Korean text (Hangul) following the **Revised Romanization of Korean** rules.
 
 This is a port of the original Python library [korean-romanizer](https://github.com/osori/korean-romanizer) to Java.
@@ -20,7 +26,7 @@ Add this dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>io.github.korean-romanizer</groupId>
+    <groupId>io.github.m3nfis</groupId>
     <artifactId>korean-romanizer</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -31,7 +37,7 @@ Add this dependency to your `pom.xml`:
 Add this dependency to your `build.gradle`:
 
 ```gradle
-implementation 'io.github.korean-romanizer:korean-romanizer:1.0.0'
+implementation 'io.github.m3nfis:korean-romanizer:1.0.0'
 ```
 
 ### Building from Source
@@ -169,9 +175,22 @@ This project follows the same license as the original Python implementation. Ple
 
 This Java port is based on the excellent Python library [korean-romanizer](https://github.com/osori/korean-romanizer) by osori. All Korean linguistic rules and test cases are derived from the original implementation.
 
-## Publishing to Maven Central
+## 📚 Documentation & Resources
 
-This library is configured for publication to Maven Central. See [PUBLISHING.md](PUBLISHING.md) for detailed instructions on how to publish new versions.
+- **[API Documentation](https://m3nfis.github.io/java-korean-romanizer/javadoc/)**: Complete Javadoc documentation
+- **[GitHub Actions Setup](GITHUB_ACTIONS_SETUP.md)**: CI/CD pipeline configuration guide
+- **[Maven Central Checklist](MAVEN_CENTRAL_CHECKLIST.md)**: Publishing requirements checklist
+- **[Publishing Guide](PUBLISHING.md)**: Detailed instructions for publishing new versions
+
+## 🚀 CI/CD Pipeline
+
+This project includes a comprehensive CI/CD pipeline with:
+
+- **Multi-JDK Testing**: Tests on Java 11, 17, and 21
+- **Code Quality**: SonarCloud integration with coverage reporting
+- **Security Scanning**: OWASP dependency vulnerability checks
+- **Automated Publishing**: SNAPSHOT and release publishing to Maven Central
+- **Documentation**: Automatic Javadoc generation and GitHub Pages deployment
 
 **Current Status**: Ready for Maven Central publication
 - ✅ POM configured with required metadata

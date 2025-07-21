@@ -5,14 +5,14 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.github.korean-romanizer</groupId>
+    <groupId>io.github.m3nfis</groupId>
     <artifactId>korean-romanizer</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>Korean Romanizer</name>
     <description>A Java library for romanizing Korean text following the Revised Romanization of Korean rules. Ported from the original Python implementation.</description>
-    <url>https://github.com/korean-romanizer/korean-romanizer-java</url>
+    <url>https://github.com/m3nfis/java-korean-romanizer</url>
 
     <licenses>
         <license>
@@ -24,23 +24,25 @@
 
     <developers>
         <developer>
-            <id>korean-romanizer</id>
-            <name>Korean Romanizer Team</name>
-            <email>korean-romanizer@example.com</email>
-            <url>https://github.com/korean-romanizer</url>
+            <id>m3nfis</id>
+            <name>m3nfis</name>
+            <url>https://github.com/m3nfis</url>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/korean-romanizer/korean-romanizer-java.git</connection>
-        <developerConnection>scm:git:ssh://github.com:korean-romanizer/korean-romanizer-java.git</developerConnection>
-        <url>https://github.com/korean-romanizer/korean-romanizer-java/tree/main</url>
+        <connection>scm:git:git://github.com/m3nfis/java-korean-romanizer.git</connection>
+        <developerConnection>scm:git:ssh://github.com:m3nfis/java-korean-romanizer.git</developerConnection>
+        <url>https://github.com/m3nfis/java-korean-romanizer/tree/main</url>
     </scm>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sonar.organization>m3nfis</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.projectKey>m3nfis_java-korean-romanizer</sonar.projectKey>
     </properties>
 
     <dependencies>
@@ -120,6 +122,30 @@
                     <source>11</source>
                     <detectJavaApiLink>false</detectJavaApiLink>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.10.0.2594</version>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.11</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
