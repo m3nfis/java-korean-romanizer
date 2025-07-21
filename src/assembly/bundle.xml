@@ -1,0 +1,30 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+    <id>bundle</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <files>
+        <!-- Add the project's pom.xml and rename it for the bundle -->
+        <file>
+            <source>${project.basedir}/pom.xml</source>
+            <outputDirectory>/</outputDirectory>
+            <destName>${project.artifactId}-${project.version}.pom</destName>
+        </file>
+    </files>
+
+    <fileSets>
+        <!-- Add all generated jars and all generated signatures from the target/ directory -->
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+                <include>*.asc</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+</assembly> 
