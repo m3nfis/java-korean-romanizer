@@ -21,7 +21,7 @@ public class ComparisonDemo {
         for (int i = 0; i < koreanSurnames.length; i++) {
             String korean = koreanSurnames[i];
             String conventional = conventionalSurnames[i];
-            String ours = Romanizer.romanize(korean);
+            String ours = KoreanRomanizer.romanize(korean);
             String notes = ours.equals(conventional.toLowerCase()) ? "✓ Match" : "Different convention";
             
             System.out.printf("%-6s | %-12s | %-16s | %s%n", 
@@ -38,7 +38,7 @@ public class ComparisonDemo {
         for (int i = 0; i < koreanGivenNames.length; i++) {
             String korean = koreanGivenNames[i];
             String conventional = conventionalGivenNames[i];
-            String ours = Romanizer.romanize(korean);
+            String ours = KoreanRomanizer.romanize(korean);
             String notes = "Missing hyphenation";
             
             System.out.printf("%-6s | %-12s | %-16s | %s%n", 
@@ -55,7 +55,7 @@ public class ComparisonDemo {
         for (int i = 0; i < koreanFullNames.length; i++) {
             String korean = koreanFullNames[i];
             String conventional = conventionalFullNames[i];
-            String ours = Romanizer.romanize(korean);
+            String ours = KoreanRomanizer.romanize(korean);
             
             System.out.printf("%-6s | %-12s | %-16s | Spacing + hyphens + surnames%n", 
                 korean, conventional, ours);
@@ -73,7 +73,7 @@ public class ComparisonDemo {
         };
         
         for (String phrase : phrases) {
-            System.out.println(phrase + " → " + Romanizer.romanize(phrase));
+            System.out.println(phrase + " → " + KoreanRomanizer.romanize(phrase));
         }
         
         System.out.println("\n=== SUMMARY ===");

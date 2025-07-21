@@ -53,14 +53,14 @@ mvn clean install
 ### Simple Usage
 
 ```java
-import com.koreanromanizer.Romanizer;
+import com.koreanromanizer.KoreanRomanizer;
 
 // Static method
-String romanized = Romanizer.romanize("안녕하세요");
+String romanized = KoreanRomanizer.romanize("안녕하세요");
 System.out.println(romanized); // "annyeonghaseyo"
 
 // Instance method
-Romanizer romanizer = new Romanizer("한국어");
+KoreanRomanizer romanizer = new KoreanRomanizer("한국어");
 String result = romanizer.romanize();
 System.out.println(result); // "hangugeo"
 ```
@@ -69,16 +69,16 @@ System.out.println(result); // "hangugeo"
 
 ```java
 // Basic romanization
-Romanizer.romanize("안녕하세요")         // "annyeonghaseyo"
-Romanizer.romanize("아이유 방탄소년단")    // "aiyu bangtansonyeondan"
+KoreanRomanizer.romanize("안녕하세요")         // "annyeonghaseyo"
+KoreanRomanizer.romanize("아이유 방탄소년단")    // "aiyu bangtansonyeondan"
 
 // Complex pronunciation rules
-Romanizer.romanize("밝다")             // "bakda"
-Romanizer.romanize("없다")             // "eopda"
-Romanizer.romanize("좋아하고")          // "joahago"
+KoreanRomanizer.romanize("밝다")             // "bakda"
+KoreanRomanizer.romanize("없다")             // "eopda"
+KoreanRomanizer.romanize("좋아하고")          // "joahago"
 
 // Individual jamo characters
-Romanizer.romanize("ㅠㄴㅁㄱ")          // "yunmg"
+KoreanRomanizer.romanize("ㅠㄴㅁㄱ")          // "yunmg"
 ```
 
 ## Architecture
@@ -98,7 +98,7 @@ The library consists of three main classes:
   - Context-dependent sound changes
   - ㅎ (h) pronunciation rules
 
-### `Romanizer`
+### `KoreanRomanizer`
 - Main romanization engine
 - Maps Korean sounds to their romanized equivalents
 - Supports both full syllables and individual jamo characters

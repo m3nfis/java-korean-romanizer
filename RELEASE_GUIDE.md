@@ -65,10 +65,10 @@ The first release of the Korean Romanizer Java library! This is a complete port 
 ## 🚀 Quick Start
 
 ```java
-import com.koreanromanizer.Romanizer;
+import com.koreanromanizer.KoreanRomanizer;
 
 // Simple usage
-String result = Romanizer.romanize("안녕하세요");
+String result = KoreanRomanizer.romanize("안녕하세요");
 System.out.println(result); // "annyeonghaseyo"
 ```
 

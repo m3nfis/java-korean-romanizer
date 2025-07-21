@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class RomanizerTest {
 
     private String romanize(String text) {
-        return Romanizer.romanize(text);
+        return KoreanRomanizer.romanize(text);
     }
 
     @Test

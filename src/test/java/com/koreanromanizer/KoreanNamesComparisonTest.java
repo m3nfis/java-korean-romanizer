@@ -51,15 +51,15 @@ public class KoreanNamesComparisonTest {
             totalTests++;
             
             // Test full name
-            String ourFullName = Romanizer.romanize(name.fullNameHangul);
+            String ourFullName = KoreanRomanizer.romanize(name.fullNameHangul);
             boolean fullNameMatch = ourFullName.equals(name.fullNameRomamized);
             
             // Test last name
-            String ourLastName = Romanizer.romanize(name.lastNameHangul);
+            String ourLastName = KoreanRomanizer.romanize(name.lastNameHangul);
             boolean lastNameMatch = ourLastName.equals(name.lastNameRomamized);
             
             // Test first name  
-            String ourFirstName = Romanizer.romanize(name.firstNameHangul);
+            String ourFirstName = KoreanRomanizer.romanize(name.firstNameHangul);
             boolean firstNameMatch = ourFirstName.equals(name.firstNameRomamized);
             
             if (fullNameMatch) {
