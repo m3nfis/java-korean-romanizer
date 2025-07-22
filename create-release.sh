@@ -18,7 +18,7 @@ TAG="v$VERSION"
 echo "🚀 Creating release for version $VERSION"
 
 # Check if we're on main branch
-CURRENT_BRANCH=$(git branch --show-current)
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if [ "$CURRENT_BRANCH" != "main" ]; then
     echo "❌ Error: You must be on the main branch to create a release"
     exit 1
