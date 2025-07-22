@@ -1,122 +1,135 @@
-# GitHub Release Guide
+# Release Guide
 
-## 🚀 Creating Your First Release
+This guide explains how to create releases for the Korean Romanizer library.
 
-Follow these steps to create your first GitHub release for the Korean Romanizer Java library:
+## Automated Release Process
 
-## Step 1: Create GitHub Repository
+The project uses GitHub Actions to automatically create releases when you push a version tag.
 
-1. Go to [GitHub.com](https://github.com) and sign in
-2. Click the **"+"** button in the top right → **"New repository"**
-3. Fill in the details:
-   - **Repository name**: `korean-romanizer-java`
-   - **Description**: `A Java library for romanizing Korean text following the Revised Romanization of Korean rules`
-   - **Public** (required for Maven Central)
-   - **Don't** initialize with README (we already have one)
-4. Click **"Create repository"**
+### Prerequisites
 
-## Step 2: Connect Local Repository to GitHub
+1. Make sure you're on the `main` branch
+2. Ensure all changes are committed
+3. Have write access to the repository
 
-After creating the repository, GitHub will show you commands. Run these in your terminal:
+### Creating a Release
+
+#### Option 1: Using the Release Script (Recommended)
 
 ```bash
-# Add the remote repository
-git remote add origin https://github.com/YOUR_USERNAME/korean-romanizer-java.git
-
-# Push your code to GitHub
-git push -u origin main
+# Create a release for version 1.0.0
+./create-release.sh 1.0.0
 ```
 
-## Step 3: Create Your First Release
+The script will:
+- Update the version in `pom.xml`
+- Build the project
+- Commit the version change
+- Create and push a version tag
+- Trigger the GitHub Actions workflow
 
-1. **Go to your GitHub repository page**
-2. **Click "Releases"** (on the right side of the main page)
-3. **Click "Create a new release"**
-4. **Fill in the release details:**
+#### Option 2: Manual Process
 
-### Release Form:
-- **Tag version**: `v1.0.0` (create new tag)
-- **Release title**: `Korean Romanizer v1.0.0 - Initial Release`
-- **Description** (copy this):
+1. **Update version in pom.xml:**
+   ```bash
+   mvn versions:set -DnewVersion=1.0.0 -DgenerateBackupPoms=false
+   ```
 
-```markdown
-# Korean Romanizer v1.0.0 🇰🇷
+2. **Build the project:**
+   ```bash
+   mvn clean package -DskipTests
+   ```
 
-The first release of the Korean Romanizer Java library! This is a complete port of the original Python implementation to Java, ready for use as a Maven dependency.
+3. **Commit and tag:**
+   ```bash
+   git add pom.xml
+   git commit -m "Bump version to 1.0.0"
+   git tag -a v1.0.0 -m "Release 1.0.0"
+   git push origin v1.0.0
+   ```
 
-## ✨ Features
+### What Happens Next
 
-- **Complete Korean romanization** following Revised Romanization of Korean rules
-- **Advanced pronunciation rules** including complex consonant combinations
-- **Comprehensive testing** with all original Python tests ported and passing
-- **Maven Central ready** for easy dependency management
-- **Zero external dependencies** for the main library
+1. **GitHub Actions Workflow** (`release.yml`) automatically:
+   - Builds the project on Ubuntu with JDK 11
+   - Creates release assets (JAR, README, LICENSE)
+   - Creates a GitHub release with the assets
+   - Generates release notes
 
-## 📦 Maven Dependency
+2. **Release Assets** include:
+   - `korean-romanizer-{version}.jar` - The compiled JAR file
+   - `README.md` - Project documentation
+   - `LICENSE` - Project license
 
-```xml
-<dependency>
-    <groupId>io.github.korean-romanizer</groupId>
-    <artifactId>korean-romanizer</artifactId>
-    <version>1.0.0</version>
-</dependency>
+3. **Release Notes** are automatically generated from:
+   - Commit messages since the last release
+   - Pull requests merged since the last release
+
+### Versioning Guidelines
+
+- Use [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
+- **MAJOR**: Breaking changes
+- **MINOR**: New features, backward compatible
+- **PATCH**: Bug fixes, backward compatible
+
+### Examples
+
+```bash
+# Patch release (bug fix)
+./create-release.sh 1.0.1
+
+# Minor release (new feature)
+./create-release.sh 1.1.0
+
+# Major release (breaking change)
+./create-release.sh 2.0.0
 ```
 
-## 🚀 Quick Start
+### Manual Release Creation
 
-```java
-import com.koreanromanizer.KoreanRomanizer;
+If you need to create a release manually:
 
-// Simple usage
-String result = KoreanRomanizer.romanize("안녕하세요");
-System.out.println(result); // "annyeonghaseyo"
-```
+1. Go to the GitHub repository
+2. Click "Releases" in the right sidebar
+3. Click "Create a new release"
+4. Choose a tag (or create a new one)
+5. Add release title and description
+6. Upload the JAR file from `target/korean-romanizer-{version}.jar`
+7. Publish the release
 
-## 📊 Test Results
+### Troubleshooting
 
-- ✅ **11/11 original tests passing**
-- ✅ **Clean build with no errors**
-- ✅ **Comprehensive Korean names analysis**
-- ✅ **Maven Central compliance verified**
+#### Workflow Fails
+- Check the GitHub Actions tab for error details
+- Ensure the repository has the necessary permissions
+- Verify the tag format is correct (`v*`)
 
-## 🙏 Acknowledgments
+#### JAR Not Building
+- Run `mvn clean package -DskipTests` locally to test
+- Check for compilation errors
+- Ensure all dependencies are available
 
-Based on the excellent Python library [korean-romanizer](https://github.com/osori/korean-romanizer) by osori.
+#### Tag Already Exists
+- Delete the existing tag: `git tag -d v1.0.0 && git push origin :refs/tags/v1.0.0`
+- Create a new tag with a different version
 
-## 📄 License
+### CI/CD Pipeline
 
-MIT License - see [LICENSE](LICENSE) file for details.
-```
+The project also includes a CI pipeline (`ci.yml`) that:
+- Runs on every push to `main`
+- Tests on multiple Java versions (11, 17, 21)
+- Builds the project
+- Uploads JAR artifacts
 
-5. **Check "Set as the latest release"**
-6. **Click "Publish release"**
+This ensures the project is always in a buildable state.
 
-## Step 4: What Happens Next
+## Current Version
 
-🎉 **Automated Publishing**: The GitHub Actions workflow will automatically:
-- Run all tests
-- Build the JAR files (main, sources, javadoc)
-- Sign artifacts with GPG
-- Deploy to Maven Central (once secrets are configured)
+The current version is defined in `pom.xml` and should be updated before each release.
 
-## 🔑 Required Secrets (for Maven Central)
+## Support
 
-Before the workflow can publish to Maven Central, add these secrets to your GitHub repository:
-
-1. Go to **Settings** → **Secrets and variables** → **Actions**
-2. Add these repository secrets:
-   - `OSSRH_USERNAME`: Your Sonatype JIRA username
-   - `OSSRH_TOKEN`: Your Sonatype JIRA password/token
-   - `GPG_PRIVATE_KEY`: Your GPG private key
-   - `GPG_PASSPHRASE`: Your GPG key passphrase
-
-## 📚 Next Steps
-
-1. **Set up Sonatype OSSRH account** (see [PUBLISHING.md](PUBLISHING.md))
-2. **Generate GPG key** for signing
-3. **Configure GitHub secrets**
-4. **Create new releases** for future versions
-
----
-
-**You're ready to release! 🚀** 
+For issues with the release process, check:
+1. GitHub Actions logs
+2. Maven build output
+3. Git tag and branch status 

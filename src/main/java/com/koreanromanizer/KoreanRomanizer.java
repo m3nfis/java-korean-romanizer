@@ -39,7 +39,7 @@ public class KoreanRomanizer {
         VOWEL.put("ㅞ", "we");
         VOWEL.put("ㅢ", "ui");
     }
-    
+
     // Enhanced vowel combination rules for better accuracy
     private static final Map<String, String> VOWEL_COMBINATIONS = new HashMap<>();
     static {
@@ -1524,7 +1524,7 @@ public class KoreanRomanizer {
                     // Single jamo character (not a full syllable)
                     if (VOWEL.containsKey(charStr)) {
                         romanized.append(VOWEL.get(charStr));
-                                    } else if (ONSET.containsKey(charStr)) {
+                    } else if (ONSET.containsKey(charStr)) {
                     romanized.append(getInitialConsonant(charStr, i, pronounced));
                     } else if (COMPAT_ONSET.containsKey(charStr)) {
                         romanized.append(COMPAT_ONSET.get(charStr));
