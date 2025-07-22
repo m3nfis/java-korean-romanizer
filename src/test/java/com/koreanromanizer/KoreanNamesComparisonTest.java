@@ -1,197 +1,133 @@
 package com.koreanromanizer;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class that compares our Korean Romanizer against a dataset of Korean names
- * and their accepted transliterations.
+ * Test suite for comparing Korean romanization accuracy across different sources.
+ * Now uses the comprehensive NameExtractor for unified testing.
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class KoreanNamesComparisonTest {
-
-    private static List<KoreanName> koreanNames;
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
+    
+    private List<NameExtractor.KoreanName> testNames;
+    
     @BeforeAll
-    static void loadTestData() {
-        try (InputStream inputStream = KoreanNamesComparisonTest.class
-                .getResourceAsStream("/korean_names.KO_test.json")) {
-            
-            if (inputStream == null) {
-                throw new RuntimeException("Could not find korean_names.KO_test.json in test resources");
-            }
-            
-            koreanNames = objectMapper.readValue(inputStream, new TypeReference<List<KoreanName>>() {});
-            System.out.println("Loaded " + koreanNames.size() + " Korean names for testing");
-            
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to load test data", e);
-        }
+    void loadTestData() {
+        System.out.println("=== LOADING TEST DATA FROM ALL SOURCES ===");
+        testNames = NameExtractor.extractAllNames();
+        
+        // Filter to get a reasonable subset for comparison testing
+        testNames = testNames.stream()
+            .filter(name -> name.getSource().contains("given names") || name.getSource().contains("surnames"))
+            .limit(200) // Use first 200 names for comparison
+            .collect(java.util.stream.Collectors.toList());
+        
+        System.out.printf("Loaded %d Korean names for comparison testing%n", testNames.size());
     }
-
+    
     @Test
-    public void testKoreanNamesAccuracy() {
-        int totalTests = 0;
+    void testRomanizationAccuracy() {
+        System.out.println("=== STARTING KOREAN ROMANIZATION COMPARISON TEST ===");
+        System.out.printf("Testing %d Korean names...%n", testNames.size());
+        
+        int totalNames = testNames.size();
         int exactMatches = 0;
-        int lastNameMatches = 0;
-        int firstNameMatches = 0;
+        int normalizedMatches = 0;
+        int partialMatches = 0;
         
-        List<ComparisonResult> mismatches = new ArrayList<>();
+        Map<String, Integer> sourceStats = new TreeMap<>();
+        Map<String, Integer> mismatchTypes = new TreeMap<>();
         
-        for (KoreanName name : koreanNames) {
-            totalTests++;
+        for (NameExtractor.KoreanName testName : testNames) {
+            // Test the romanizer
+            String romanizedResult = KoreanRomanizer.romanizeFullName(testName.getHangul());
             
-            // Test full name
-            String ourFullName = KoreanRomanizer.romanize(name.fullNameHangul);
-            boolean fullNameMatch = ourFullName.equals(name.fullNameRomamized);
+            // Track source statistics
+            String source = testName.getSource();
+            sourceStats.put(source, sourceStats.getOrDefault(source, 0) + 1);
             
-            // Test last name
-            String ourLastName = KoreanRomanizer.romanize(name.lastNameHangul);
-            boolean lastNameMatch = ourLastName.equals(name.lastNameRomamized);
+            // Check different types of matches
+            boolean exactMatch = romanizedResult.equals(testName.getRomanized());
+            boolean normalizedMatch = normalizeForComparison(romanizedResult).equals(normalizeForComparison(testName.getRomanized()));
+            boolean partialMatch = romanizedResult.toLowerCase().contains(testName.getRomanized().toLowerCase()) || 
+                                 testName.getRomanized().toLowerCase().contains(romanizedResult.toLowerCase());
             
-            // Test first name  
-            String ourFirstName = KoreanRomanizer.romanize(name.firstNameHangul);
-            boolean firstNameMatch = ourFirstName.equals(name.firstNameRomamized);
-            
-            if (fullNameMatch) {
+            if (exactMatch) {
                 exactMatches++;
             }
-            if (lastNameMatch) {
-                lastNameMatches++;
+            if (normalizedMatch) {
+                normalizedMatches++;
             }
-            if (firstNameMatch) {
-                firstNameMatches++;
+            if (partialMatch) {
+                partialMatches++;
             }
             
-            // Record mismatches for analysis
-            if (!fullNameMatch || !lastNameMatch || !firstNameMatch) {
-                mismatches.add(new ComparisonResult(
-                    name, ourLastName, ourFirstName, ourFullName,
-                    lastNameMatch, firstNameMatch, fullNameMatch
-                ));
+            // Track mismatch types
+            if (!normalizedMatch) {
+                String mismatchType = String.format("%s -> %s (expected: %s)", 
+                    testName.getHangul(), romanizedResult, testName.getRomanized());
+                mismatchTypes.put(mismatchType, mismatchTypes.getOrDefault(mismatchType, 0) + 1);
             }
         }
         
-        // Calculate accuracy percentages
-        double fullNameAccuracy = (double) exactMatches / totalTests * 100;
-        double lastNameAccuracy = (double) lastNameMatches / totalTests * 100;
-        double firstNameAccuracy = (double) firstNameMatches / totalTests * 100;
+        // Calculate percentages
+        double exactAccuracy = (double) exactMatches / totalNames * 100;
+        double normalizedAccuracy = (double) normalizedMatches / totalNames * 100;
+        double partialAccuracy = (double) partialMatches / totalNames * 100;
         
-        // Print detailed results
-        System.out.println("\n=== KOREAN ROMANIZER ACCURACY REPORT ===");
-        System.out.println("Total names tested: " + totalTests);
+        // Print comprehensive report
         System.out.println();
-        System.out.println("Full name exact matches: " + exactMatches + " (" + String.format("%.2f", fullNameAccuracy) + "%)");
-        System.out.println("Last name matches: " + lastNameMatches + " (" + String.format("%.2f", lastNameAccuracy) + "%)");
-        System.out.println("First name matches: " + firstNameMatches + " (" + String.format("%.2f", firstNameAccuracy) + "%)");
+        System.out.println("=== KOREAN ROMANIZATION COMPARISON REPORT ===");
+        System.out.printf("Total names tested: %d%n", totalNames);
         System.out.println();
         
-        // Show first 20 mismatches for analysis
-        System.out.println("=== ANALYSIS OF MISMATCHES (first 20) ===");
-        int shown = 0;
-        for (ComparisonResult result : mismatches) {
-            if (shown >= 20) break;
-            
-            System.out.println("Korean: " + result.name.fullNameHangul + 
-                             " | Expected: " + result.name.fullNameRomamized + 
-                             " | Our result: " + result.ourFullName);
-            
-            if (!result.lastNameMatch) {
-                System.out.println("  Last name: " + result.name.lastNameHangul + 
-                                 " → Expected: " + result.name.lastNameRomamized + 
-                                 " | Ours: " + result.ourLastName);
-            }
-            if (!result.firstNameMatch) {
-                System.out.println("  First name: " + result.name.firstNameHangul + 
-                                 " → Expected: " + result.name.firstNameRomamized + 
-                                 " | Ours: " + result.ourFirstName);
-            }
-            System.out.println();
-            shown++;
+        System.out.println("ACCURACY METRICS:");
+        System.out.printf("  Exact matches: %d/%d (%.2f%%)%n", exactMatches, totalNames, exactAccuracy);
+        System.out.printf("  Normalized matches: %d/%d (%.2f%%)%n", normalizedMatches, totalNames, normalizedAccuracy);
+        System.out.printf("  Partial matches: %d/%d (%.2f%%)%n", partialMatches, totalNames, partialAccuracy);
+        System.out.println();
+        
+        System.out.println("SOURCE BREAKDOWN:");
+        for (Map.Entry<String, Integer> entry : sourceStats.entrySet()) {
+            System.out.printf("  %s: %d names%n", entry.getKey(), entry.getValue());
         }
+        System.out.println();
         
-        // Analyze common patterns in mismatches
-        System.out.println("=== COMMON MISMATCH PATTERNS ===");
-        analyzeMismatchPatterns(mismatches);
+        // Show top mismatch patterns
+        System.out.println("TOP MISMATCH PATTERNS (first 10):");
+        mismatchTypes.entrySet().stream()
+            .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+            .limit(10)
+            .forEach(entry -> System.out.printf("  %dx: %s%n", entry.getValue(), entry.getKey()));
+        System.out.println();
         
-        // Don't fail the test, just report results
-        System.out.println("Test completed. Results logged above.");
-    }
-    
-    private void analyzeMismatchPatterns(List<ComparisonResult> mismatches) {
-        // Count hyphenation differences
-        int hyphenationDiffs = 0;
-        int spacingDiffs = 0;
-        int transcriptionDiffs = 0;
+        // Assertions
+        assertTrue(normalizedAccuracy >= 30.0, 
+            String.format("Normalized accuracy should be at least 30%% (got %.2f%%)", normalizedAccuracy));
+        assertTrue(partialAccuracy >= 50.0, 
+            String.format("Partial accuracy should be at least 50%% (got %.2f%%)", partialAccuracy));
         
-        for (ComparisonResult result : mismatches) {
-            String expected = result.name.fullNameRomamized.toLowerCase();
-            String ours = result.ourFullName.toLowerCase();
-            
-            // Check if difference is just hyphenation
-            if (expected.replace("-", "").equals(ours.replace("-", "")) &&
-                expected.replace(" ", "").equals(ours.replace(" ", ""))) {
-                hyphenationDiffs++;
-            }
-            // Check if difference is just spacing
-            else if (expected.replace(" ", "").equals(ours.replace(" ", ""))) {
-                spacingDiffs++;
-            }
-            // Otherwise it's a transcription difference
-            else {
-                transcriptionDiffs++;
-            }
-        }
-        
-        System.out.println("Hyphenation/formatting differences: " + hyphenationDiffs);
-        System.out.println("Spacing differences: " + spacingDiffs);
-        System.out.println("Actual transcription differences: " + transcriptionDiffs);
-        System.out.println("Total mismatches: " + mismatches.size());
-    }
-
-    /**
-     * Data class representing a Korean name entry from the test dataset.
-     */
-    public static class KoreanName {
-        public String lastNameHangul;
-        public String lastNameRomamized;
-        public String firstNameHangul;
-        public String firstNameRomamized;
-        public String fullNameHangul;
-        public String fullNameRomamized;
+        System.out.println("=== COMPARISON TEST COMPLETED SUCCESSFULLY ===");
     }
     
     /**
-     * Data class for storing comparison results.
+     * Normalize strings for comparison by removing hyphens, converting to lowercase,
+     * and handling common romanization variations
      */
-    private static class ComparisonResult {
-        public KoreanName name;
-        public String ourLastName;
-        public String ourFirstName;
-        public String ourFullName;
-        public boolean lastNameMatch;
-        public boolean firstNameMatch;
-        public boolean fullNameMatch;
+    private String normalizeForComparison(String text) {
+        if (text == null) return "";
         
-        public ComparisonResult(KoreanName name, String ourLastName, String ourFirstName, 
-                              String ourFullName, boolean lastNameMatch, boolean firstNameMatch, 
-                              boolean fullNameMatch) {
-            this.name = name;
-            this.ourLastName = ourLastName;
-            this.ourFirstName = ourFirstName;
-            this.ourFullName = ourFullName;
-            this.lastNameMatch = lastNameMatch;
-            this.firstNameMatch = firstNameMatch;
-            this.fullNameMatch = fullNameMatch;
-        }
+        return text.toLowerCase()
+            .replaceAll("-", " ")
+            .replaceAll("\\s+", " ")
+            .trim();
     }
 } 
